@@ -1467,5 +1467,40 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+<script>
+const INSECT_AI_URL =
+  "https://insect-finder-ai.farhanabegum-info.workers.dev";
+
+async function identifyInsectWithAI(file) {
+  if (!file) {
+    throw new Error("No image selected.");
+  }
+
+  const reader = new FileReader();
+
+  const base64Image = await new Promise((resolve, reject) => {
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const response = await fetch(INSECT_AI_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      image: base64Image,
+      mimeType: file.type || "image/jpeg"
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error("AI analysis failed.");
+  }
+
+  return await response.json();
+}
+</script>
 </body>
   </html>
